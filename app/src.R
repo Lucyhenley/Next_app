@@ -11,7 +11,7 @@ remove_seats <- function(seat_locations,radius) {
 
         trial_seat <- seat_locations[m,]
         #if too close then a seat number to list
-        if (((fixed_seat$x-trial_seat$x)^2 + (fixed_seat$y-trial_seat$y)^2) < radius^2 && fixed_seat$n != trial_seat$n){
+        if (((fixed_seat$pos_x-trial_seat$pos_x)^2 + (fixed_seat$pos_y-trial_seat$pos_y)^2) < radius^2 && fixed_seat$n != trial_seat$n){
           num_to_remove <- c(num_to_remove, m)
         }
       }
@@ -50,7 +50,7 @@ remove_seats_shields <- function(seat_locations,radius,heatmaps) {
 
         trial_seat <- seat_locations[m,]
         #if too close then a seat number to list
-        if (inpolygon(trial_seat$x, trial_seat$y, xp, yp, boundary = TRUE) && fixed_seat$n != trial_seat$n){
+        if (inpolygon(trial_seat$pos_x, trial_seat$pos_y, xp, yp, boundary = TRUE) && fixed_seat$n != trial_seat$n){
           num_to_remove <- c(num_to_remove, m)
         }
       }
@@ -76,8 +76,8 @@ heatmapper <- function(seat_locations,radius,domain_x,domain_y) {
   theta <- seq(0, 2*pi, length.out = 100)
   heatmaps <- array(numeric(),c(2,100*nrow(seat_locations)))
   for (j in 1:nrow(seat_locations)) {
-    x_circle <- radius*cos(theta) + seat_locations[j,"x"]
-    y_circle <- radius*sin(theta) + seat_locations[j,"y"]
+    x_circle <- radius*cos(theta) + seat_locations[j,"pos_x"]
+    y_circle <- radius*sin(theta) + seat_locations[j,"pos_y"]
     x_circle[x_circle<0] <- 0
     x_circle[x_circle>domain_x] <- domain_x
     y_circle[y_circle<0] <- 0
@@ -96,8 +96,8 @@ shielded_heatmapper <- function(seat_locations,shield,radius,domain_x,domain_y) 
 
   for (j in 1:nrow(seat_locations)) {
     shield_interact <- c()
-    x_circle <- radius*cos(theta) + seat_locations[j,"x"]
-    y_circle <- radius*sin(theta) + seat_locations[j,"y"]
+    x_circle <- radius*cos(theta) + seat_locations[j,"pos_x"]
+    y_circle <- radius*sin(theta) + seat_locations[j,"pos_y"]
     x_circle[x_circle<0] <- 0
     x_circle[x_circle>domain_x] <- domain_x
     y_circle[y_circle<0] <- 0
@@ -105,13 +105,13 @@ shielded_heatmapper <- function(seat_locations,shield,radius,domain_x,domain_y) 
     for (i in 1:nrow(shield)) {
       shield_y <- seq(shield[i,3],shield[i,4],length.out=100)
       shield_x <- rep(shield[i,1],100)
-      distance2 <- (shield_x-seat_locations[j,"x"])^2 + (shield_y-seat_locations[j,"y"])^2
+      distance2 <- (shield_x-seat_locations[j,"pos_x"])^2 + (shield_y-seat_locations[j,"pos_y"])^2
       if (min(distance2) < radius^2) {
         if (shield[i,1] < seat_locations[j,"x"]) {
           shield_top <- max(shield[i,3], shield[i,4])
           shield_bottom <- min(shield[i,3],shield[i,4])
-          vec1 <- c(shield[i,1]-seat_locations[j,"x"],shield_top -seat_locations[j,"y"])
-          vec2 <- c(shield[i,1]-seat_locations[j,"x"],shield_bottom -seat_locations[j,"y"])
+          vec1 <- c(shield[i,1]-seat_locations[j,"pos_x"],shield_top -seat_locations[j,"pos_y"])
+          vec2 <- c(shield[i,1]-seat_locations[j,"pos_x"],shield_bottom -seat_locations[j,"pos_y"])
           Trapezium_1 <- seat_locations[j,] + 20*vec1
           Trapezium_2 <- seat_locations[j,] + 20*vec2
           condition_in<- inpolygon(x_circle,y_circle,c(shield[i,1],Trapezium_1$x,Trapezium_2$x,shield[i,1]),c(shield_top, Trapezium_1$y,Trapezium_2$y,shield_bottom))
@@ -120,8 +120,8 @@ shielded_heatmapper <- function(seat_locations,shield,radius,domain_x,domain_y) 
         else {
           shield_top <- max(shield[i,3], shield[i,4])
           shield_bottom <- min(shield[i,3],shield[i,4])
-          vec1 <- c(shield[i,1]-seat_locations[j,"x"],shield_top -seat_locations[j,"y"])
-          vec2 <- c(shield[i,1]-seat_locations[j,"x"],shield_bottom -seat_locations[j,"y"])
+          vec1 <- c(shield[i,1]-seat_locations[j,"pos_x"],shield_top -seat_locations[j,"pos_y"])
+          vec2 <- c(shield[i,1]-seat_locations[j,"pos_x"],shield_bottom -seat_locations[j,"pos_y"])
           Trapezium_1 <- seat_locations[j,] + 20*vec1
           Trapezium_2 <- seat_locations[j,] + 20*vec2
           condition_in<- inpolygon(x_circle,y_circle,c(shield[i,1],Trapezium_2$x,Trapezium_1$x,shield[i,1]),c(shield_bottom, Trapezium_2$y,Trapezium_1$y,shield_top))
