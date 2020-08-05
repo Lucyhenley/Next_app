@@ -1,5 +1,5 @@
 remove_seats <- function(seat_locations,radius) {
-  accepted_seats <- seat_locations$n
+  accepted_seats <- (best_order$n)
   for (i in 1:length(accepted_seats)){
     num_to_remove <- c()
 
@@ -7,12 +7,14 @@ remove_seats <- function(seat_locations,radius) {
 
       #go through each accepted node and determine if too close
       fixed_seat <- seat_locations[accepted_seats[i],]
-      for (m in accepted_seats[i]:accepted_seats[length(accepted_seats)]){
+      
+      for (m in 1:length(accepted_seats)){
 
-        trial_seat <- seat_locations[m,]
+        trial_seat <- seat_locations[accepted_seats[m],]
         #if too close then a seat number to list
-        if (((fixed_seat$pos_x-trial_seat$pos_x)^2 + (fixed_seat$pos_y-trial_seat$pos_y)^2) < radius^2 && fixed_seat$n != trial_seat$n){
-          num_to_remove <- c(num_to_remove, m)
+        print(accepted_seats[m] != accepted_seats[i])
+        if (((fixed_seat$pos_x-trial_seat$pos_x)^2 + (fixed_seat$pos_y-trial_seat$pos_y)^2) < radius^2 && accepted_seats[m] != accepted_seats[i]){
+          num_to_remove <- c(num_to_remove, accepted_seats[m])
         }
       }
 
@@ -34,7 +36,7 @@ remove_seats <- function(seat_locations,radius) {
 }
 
 remove_seats_shields <- function(seat_locations,radius,heatmaps) {
-  accepted_seats <- seat_locations$n
+  accepted_seats <- unlist(best_order)
   for (i in 1:length(accepted_seats)){
     num_to_remove <- c()
 
