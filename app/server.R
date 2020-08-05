@@ -4,41 +4,19 @@ server <- function(input, output, session) {
   
   url <- a("here", href="https://github.com/Lucyhenley/CardiffMATHBIO_NERCHackathonTwo_PublicTransport")
   output$tab <- renderUI({
-    tagList("This app is Cardiff University MATHBIO's entry to COVID-19 Hackathon 2: Recovery. The goal is to reduce public transport
-  emissions per person by creating a tool that will present an optimal seating arrangement under social distancing.
-            To use the app, adjust the sliders to find optimal seating arrangements following social distancing in varying situations.
-            For more information, click ", url, ".")
+    tagList("Some info about the alg on the office plan here. see writeup", url, ".")
   })
   
   usable_seats <- reactive({
-    if (input$inputSelect == 1 ){
+   
       seat_locations <- remove_seats(seat_locations,input$SocialDistance)
-    }
-    else if (input$inputSelect == 2 ){
-      
-      
-      seat_locations <- remove_seats(seat_locations,input$SocialDistance_MANUAL)
-      
-    }
-    else{
-      seat_locations <- remove_seats(seat_locations,input$SocialDistance1)
-    }
+ 
   })
   
   usable_shields <- reactive({
-    if (input$inputSelect == 1 ){
-      return(shield_locations_to_use(input$ShieldLength,input$NumberofShields,shield_locations))
-    }
     
-    else if (input$inputSelect == 2 ){
-      
-      return(manual_shield_selection(input$ShieldLength1_MANUAL,shield_locations,input$TopRowShields,input$BottomRowShields))
-    }
-    
-    
-    else{
-      return(use_zig_zag_shields(input$ShieldLength1,input$NumberofShields1,shield_locations))
-    }
+      return(c(0,0,0,0))
+  
     
     
     
@@ -47,35 +25,12 @@ server <- function(input, output, session) {
   
   shielded_seats <- reactive({
     shield_loc <-   usable_shields()
+    
     heatmaps <- 1
     
-    
-    if (input$inputSelect == 1 ){
-      heatmaps <- shielded_heatmapper(seat_locations,shield_loc,input$SocialDistance,domain_x,domain_y)
+      heatmaps <- heatmapper(seat_locations,input$SocialDistance,domain_x,domain_y)
       seats <- remove_seats_shields(seat_locations,input$SocialDistance,heatmaps)
-    }
-    else if (input$inputSelect == 2 ){
-      
-      
-      if (shield_loc[4]==0){
-        
-        heatmaps <- heatmapper(seat_locations,input$SocialDistance_MANUAL,domain_x,domain_y)
-        seats <- remove_seats_shields(seat_locations,input$SocialDistance_MANUAL,heatmaps)
-        
-      }
-      else{
-        heatmaps <- shielded_heatmapper(seat_locations,shield_loc,input$SocialDistance_MANUAL,domain_x,domain_y)
-        seats <- remove_seats_shields(seat_locations,input$SocialDistance_MANUAL,heatmaps)
-      }
-    }
-    
-    
-    
-    else{
-      heatmaps <- shielded_heatmapper(seat_locations,shield_loc,input$SocialDistance1,domain_x,domain_y)
-      seats <- remove_seats_shields(seat_locations,input$SocialDistance1,heatmaps)
-    }
-    
+
     return(seats)
   })
   
@@ -83,25 +38,17 @@ server <- function(input, output, session) {
   
   output$capacity <- renderText({
     social_distancing <- 2 #to be overwritten
-    if (input$inputSelect == 1 ){
+
       
       social_distancing <- input$SocialDistance
       
-    }
-    else if (input$inputSelect == 2 ){
-      
-      social_distancing <- input$SocialDistance_MANUAL
-      
-    }
-    else{
-      
-      social_distancing <- input$SocialDistance1
-    }
+    
+
     
     seat_locations <- usable_seats()
     heatmaps <- heatmapper(seat_locations,social_distancing,domain_x,domain_y)
     shield_loc <- usable_shields()
-    heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
+   # heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
     seats <- shielded_seats()
     cap <- nrow(seat_locations)
     paste("Capacity of 1 train carriage is ", cap, "% with social distancing or ", round(100*nrow(seats)/76), "% with shields")
@@ -110,27 +57,15 @@ server <- function(input, output, session) {
   output$emissionstext <- renderText({
 
     social_distancing <- 2 #to be overwritten
-    if (input$inputSelect == 1 ){
+
       
       social_distancing <- input$SocialDistance
       
-    }
-    else if (input$inputSelect == 2 ){
-      
-      social_distancing <- input$SocialDistance_MANUAL
-      
-    }
-    else{
-      
-      social_distancing <- input$SocialDistance1
-    }
+
     
     seat_locations <- usable_seats()
     heatmaps <- heatmapper(seat_locations,social_distancing,domain_x,domain_y)
     shield_loc <- usable_shields()
-    if (shield_loc[4] != 0) {
-      heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
-    }
     seats <- shielded_seats()
     cap <- nrow(seat_locations)
     emission_dist <- emission_per_pass_train(cap)
@@ -145,73 +80,52 @@ or " , floor(emission_shield), " g/km with shields.")
   output$subplots <- renderPlot({
     
     social_distancing <- 2 #to be overwritten
-    if (input$inputSelect == 1 ){
+
       social_distancing <- input$SocialDistance
-    }
-    else if (input$inputSelect == 2 ){
-      
-      social_distancing <- input$SocialDistance_MANUAL
-      
-    }
-    else{
-      social_distancing <- input$SocialDistance1
-    }
+  
     seat_sd <- usable_seats()
     heatmaps <- heatmapper(seat_sd,social_distancing,domain_x,domain_y)
     par(mfrow=c(3,1), mar= c(3,2,5, 1))
-    captext <- paste("Capacity of 1 train carriage is ", nrow(seat_sd), " passengers with social distancing.")
-    mytitle <- "Available seats with social distancing measures"
+    captext <- paste("Maximum capacity of the 1st floor office is ", nrow(seat_sd), " with", social_distancing,  "m social distancing.")
+   mytitle <- ""
 
     plot(NULL, xlim=c(0,domain_x), ylim=c(0,domain_y), asp=1, axes=FALSE,
          xlab="", ylab="")
     mtext(side=3, line=3, at=-0.07, adj=0, cex=1.6,font=2,  mytitle)
     mtext(side=3, line=1.6, at=-0.07, adj=0, cex=1.4, font=2, captext)
-    points(seat_locations$x,seat_locations$y,pch=4,col=rgb(1, 0, 0,1))
+    points(seat_locations$pos_x,seat_locations$pos_y,pch=4,col=rgb(1, 0, 0,1))
 
     for (j in 1:nrow(seat_sd)) {
       idx1 <- 1+100*(j-1)
       idx2 <- 100*(j-1) + 100
       polygon(x=heatmaps[1,idx1:idx2],y=heatmaps[2,idx1:idx2],col=rgb(0, 0, 1,0.2))
-      points(seat_sd[j,"x"],seat_sd[j,"y"],cex=2,pch=19)
-    }
-
-    lines(x_box,y_box)
-    seats <- shielded_seats()
-    shield_loc <- usable_shields()
-    
-    
-    
-    if (shield_loc[4]==0){
-      heatmaps <- heatmapper(seat_locations,social_distancing,domain_x,domain_y)
+      points(seat_sd[j,"pos_x"],seat_sd[j,"pos_y"],cex=2,pch=19)
       
-    }else{
-      
-      heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
-      
-    }
-
-    captext <- paste("Capacity of 1 train carriage is ", nrow(seats), " passengers with shielding.")
-    plot(NULL, xlim=c(0,domain_x), ylim=c(0,domain_y), asp=1, axes=FALSE, xlab="", 
-         ylab="")
-    mytitle <- "Available seats with social distancing measures and shielding"
-    mtext(side=3, line=3, at=-0.07, adj=0, cex=1.6, font=2, mytitle)
-    mtext(side=3, line=1.6, at=-0.07, adj=0, cex=1.4, font=2, captext)
-    points(seat_locations$x,seat_locations$y,pch=4,col=rgb(1, 0, 0,1))
-    for (j in seats$n) {
-      idx1 <- 1+100*(j-1)
-      idx2 <- 100*(j-1) + 100
-      polygon(x=heatmaps[1,idx1:idx2],y=heatmaps[2,idx1:idx2],col=rgb(0, 0, 1,0.2))
-      points(seats$x[seats$n==j],seats$y[seats$n==j],pch=19,cex=2)
     }
     lines(x_box,y_box)
     
     
-    if (shield_loc[4]!=0){
-      for (i in 1:nrow(shield_loc)){
-        lines(c(shield_loc[i,1], shield_loc[i,2]),  c(shield_loc[i,3], shield_loc[i,4]), lty = 1, lwd = 3,col ='red'   )
-      }
-    }
+
     
+    
+    #  seats <- shielded_seats()
+    #  shield_loc <- usable_shields()
+   #   heatmaps <- heatmapper(seat_locations,social_distancing,domain_x,domain_y)
+      
+  
+#    captext <- paste("Max capacty of the 1st floor office is ", nrow(seats), " passengers with shielding.")
+#    plot(NULL, xlim=c(0,domain_x), ylim=c(0,domain_y), asp=1, axes=FALSE, xlab="", 
+ #        ylab="")
+  #  mytitle <- "Available seats with social distancing measures and shielding"
+   # mtext(side=3, line=3, at=-0.07, adj=0, cex=1.6, font=2, mytitle)
+  #  mtext(side=3, line=1.6, at=-0.07, adj=0, cex=1.4, font=2, captext)
+  #  points(seat_locations$pos_x,seat_locations$pos_y,pch=4,col=rgb(1, 0, 0,1))
+   # for (j in seats$n) {
+  #    idx1 <- 1+100*(j-1)
+  #    idx2 <- 100*(j-1) + 100
+  #    polygon(x=heatmaps[1,idx1:idx2],y=heatmaps[2,idx1:idx2],col=rgb(0, 0, 1,0.2))
+   #   points(seats$x[seats$n==j],seats$y[seats$n==j],pch=19,cex=2)
+  #  }
     
     par(mar=c(0,0,0,0))
     plot(NULL, xlim=c(0,10),ylim=c(0,10), axes=FALSE, xlab="", ylab="")
@@ -228,43 +142,28 @@ or " , floor(emission_shield), " g/km with shields.")
   output$train_diagram <- renderPlot({
     
     plot(NULL, xlim=c(0,domain_x), ylim=c(0,domain_y), asp=1, axes=FALSE, xlab="", ylab="")
-    IM = readPNG("floorplan2.png")
-    rasterImage(IM,0,0,135.6,21.2)
+    IM = readPNG("firstfloorplan1.png")
+    rasterImage(IM,0,0,200,60)
     
   })
   
   output$trainemissions <- renderPlot({
     
     social_distancing <- 2 #to be overwritten
-    if (input$inputSelect == 1 ){
+
       
       social_distancing <- input$SocialDistance
-      
-    }
-    else if (input$inputSelect == 2 ){
-      
-      social_distancing <- input$SocialDistance_MANUAL
-      
-    }
-    else{
-      
-      social_distancing <- input$SocialDistance1
-    }
+   
     
     pass <- linspace(1, 76, n = 76)
     seat_locations <- usable_seats()
     heatmaps <- heatmapper(seat_locations,social_distancing,domain_x,domain_y)
     shield_loc <- usable_shields()
+ 
+      
+    #heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
+      
     
-    if (shield_loc[4]==0){
-      
-      heatmaps <- heatmapper(seat_locations,input$SocialDistance_MANUAL,domain_x,domain_y)
-      
-    }else{
-      
-      heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
-      
-    }
     
     seats <- shielded_seats()
     cap <- nrow(seat_locations)
@@ -301,20 +200,11 @@ or " , floor(emission_shield), " g/km with shields.")
   output$social_distanced_capacity <- renderPlot({
     
     social_distancing <- 2 #to be overwritten
-    if (input$inputSelect == 1 ){
+   
       
       social_distancing <- input$SocialDistance
       
-    }
-    else if (input$inputSelect == 2 ){
-      
-      social_distancing <- input$SocialDistance_MANUAL
-      
-    }
-    else{
-      
-      social_distancing <- input$SocialDistance1
-    }
+    
     
     seat_locations <- usable_seats()
     heatmaps <- heatmapper(seat_locations,social_distancing,domain_x,domain_y)
@@ -325,7 +215,7 @@ or " , floor(emission_shield), " g/km with shields.")
       idx1 <- 1+100*(j-1)
       idx2 <- 100*(j-1) + 100
       polygon(x=heatmaps[1,idx1:idx2],y=heatmaps[2,idx1:idx2],col=rgb(1, 0, 0,0.1))
-      points(seat_locations[j,"x"],seat_locations[j,"y"],pch=19)
+      points(seat_locations[j,"pos_x"],seat_locations[j,"pos_y"],pch=19)
     }
     lines(x_box,y_box)
   }, height=75)
@@ -333,24 +223,15 @@ or " , floor(emission_shield), " g/km with shields.")
   output$shielded_capacity <- renderPlot({
     
     social_distancing <- 2 #to be overwritten
-    if (input$inputSelect == 1 ){
+    
       
-      social_distancing <- input$SocialDistance
+    social_distancing <- input$SocialDistance
       
-    }
-    else if (input$inputSelect == 2 ){
-      
-      social_distancing <- input$SocialDistance_MANUAL
-      
-    }
-    else{
-      
-      social_distancing <- input$SocialDistance1
-    }
+   
     
     seats <- shielded_seats()
     shield_loc <- usable_shields()
-    heatmaps <- shielded_heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
+    heatmaps <- heatmapper(seat_locations,shield_loc,social_distancing,domain_x,domain_y)
     par(mar = c(0, 0, 0, 0))
     plot(NULL, xlim=c(0,domain_x), ylim=c(0,domain_y), asp=1, axes=FALSE, xlab="", ylab="")
     for (j in seats$n) {
