@@ -1,0 +1,12 @@
+name: Next_seating
+title: Next_seating
+username:
+account: lucyhenley
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2637542
+bundleId: 3477197
+url: https://lucyhenley.shinyapps.io/Next_seating/
+when: 1596618294.47171
+asMultiple: FALSE
+asStatic: FALSE
