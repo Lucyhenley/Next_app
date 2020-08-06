@@ -4,7 +4,7 @@ server <- function(input, output, session) {
   
   url <- a("here", href="https://github.com/Lucyhenley/CardiffMATHBIO_NERCHackathonTwo_PublicTransport")
   output$tab <- renderUI({
-    tagList("Some info about the alg on the office plan here. see writeup", url, ".")
+    tagList("This is a supplementary application that allows the user to specify the social distancing measure and returns the maximal capacity of the office geometry provided. Additional information about the methods used can be found ",url, ".")
   })
   
   usable_seats <- reactive({
@@ -86,7 +86,7 @@ or " , floor(emission_shield), " g/km with shields.")
     seat_sd <- usable_seats()
     heatmaps <- heatmapper(seat_sd,social_distancing,domain_x,domain_y)
     par(mfrow=c(3,1), mar= c(3,2,5, 1))
-    captext <- paste("Maximum capacity of the 1st floor office is ", nrow(seat_sd), " with", social_distancing,  "m social distancing.")
+    captext <- paste("Maximum capacity of the 1st floor office is ", round((nrow(seat_sd)/253)*100,digits=2), "% with", social_distancing,  "m social distancing.")
    mytitle <- ""
 
     plot(NULL, xlim=c(0,domain_x), ylim=c(0,domain_y), asp=1, axes=FALSE,

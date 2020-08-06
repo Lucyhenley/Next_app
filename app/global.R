@@ -14,6 +14,7 @@ library(latex2exp)
 
 seat_locations <- read.csv(file="next_all_seats_first_floor_trial.csv")
 shield_locations <- read.csv(file="next_all_seats_first_floor_trial.csv")
+best_order <- read.csv(file= "best_order_next_trial.csv")
 
 domain_x <- 60
 domain_y <- 45
