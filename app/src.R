@@ -12,7 +12,7 @@ remove_seats <- function(seat_locations,radius) {
 
         trial_seat <- seat_locations[accepted_seats[m],]
         #if too close then a seat number to list
-        print(accepted_seats[m] != accepted_seats[i])
+ #       print(accepted_seats[m] != accepted_seats[i])
         if (((fixed_seat$pos_x-trial_seat$pos_x)^2 + (fixed_seat$pos_y-trial_seat$pos_y)^2) < radius^2 && accepted_seats[m] != accepted_seats[i]){
           num_to_remove <- c(num_to_remove, accepted_seats[m])
         }

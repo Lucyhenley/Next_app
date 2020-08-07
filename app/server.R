@@ -2,9 +2,9 @@ options(shiny.maxRequestSize=2000*1024^2)
 
 server <- function(input, output, session) {
   
-  url <- a("here", href="https://github.com/Lucyhenley/CardiffMATHBIO_NERCHackathonTwo_PublicTransport")
+  url <- a("here.", href="https://github.com/Lucyhenley/CardiffMATHBIO_NERCHackathonTwo_PublicTransport")
   output$tab <- renderUI({
-    tagList("This is a supplementary application that allows the user to specify the social distancing measure and returns the maximal capacity of the office geometry provided. Additional information about the methods used can be found ",url, ".")
+    tagList("This is a supplementary application that allows the user to specify the social distancing measure and returns the maximal capacity of the office geometry provided. Additional information about the methods used can be found ",url)
   })
   
   usable_seats <- reactive({

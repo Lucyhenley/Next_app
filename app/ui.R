@@ -5,7 +5,7 @@ ui <- fluidPage(
   
 
   
-  #wellPanel(uiOutput("tab",style = "font-size:15px;")),
+  wellPanel(uiOutput("tab",style = "font-size:15px;")),
   
   fluidRow(
     
