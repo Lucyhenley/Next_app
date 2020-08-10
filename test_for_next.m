@@ -1,7 +1,7 @@
 close all
 clc
 clear
-plot_setup
+% plot_setup
 
 
 rad = linspace(0.1,2,20);
