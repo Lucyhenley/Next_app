@@ -37,12 +37,12 @@
 
 
 \section*{Methods and results}
-Following our discussions, we took the CAD file provided and reformatted the information to be compatible with our app. Upon selecting a fixed desk, the algorithm sweeps through all other seats and removes anydesk that is within the social distance measure provided, repeating this process until all available desk spaces have been checked. In order to find an optimal solution, we simulated the desk selection randomly $5000$ times (see \autoref{fig:Stochastic_sims}), selecting the order of fixed seats that yielded the greatest capacity. The results of the optimal desk selection algorithm are displayed in Figure \ref{Demonstration_pics} and in Table \ref{tab:performance}.  We have run run simulations including and excluding the conference room.
+Following our discussions, we took the CAD file provided and reformatted the information to be compatible with our app. Upon selecting a fixed desk, the algorithm sweeps through all other seats and removes any desk that is within the social distance measure provided, repeating this process until all available desk spaces have been checked. In order to find an optimal solution, we simulated the desk selection randomly $5000$ times (see \autoref{fig:Stochastic_sims}), selecting the order of fixed seats that yielded the greatest capacity. The results of the optimal desk selection algorithm are displayed in Figure \ref{Demonstration_pics} and in Table \ref{tab:performance}.  We have run simulations including and excluding the conference room.
 
 \begin{figure}[h]
          \centering
          \includegraphics[width=1\textwidth]{random_order_sim.png}
-         \caption{Stochastic layoutselection for the old building first floor, not including the conference room. Fixed desks are selected at random, then the algorithm sweeps through all desks and removes those too close to the accepted desks. The black line represents the capacity from each simulation, while the dashed red line corresponds to the mean of all simulations.}
+         \caption{Stochastic layout selection for the old building first floor, not including the conference room. Fixed desks are selected at random, then the algorithm sweeps through all desks and removes those too close to the accepted desks. The black line represents the capacity from each simulation, while the dashed red line corresponds to the mean of all simulations.}
          \label{fig:Stochastic_sims}
 \end{figure}
 
@@ -100,6 +100,6 @@ As demonstrated in Table \ref{tab:performance}, we can very quickly achieve sign
 \section*{Prospective developments for improving optimality}
 Our app always provides seating arrangements that obey social distancing measures, and provides locally optimal solutions which are already better than the given benchmarks. Returning the  absolute optimum arrangement, however, is a lot more difficult because the problem is what is known as `NP-hard'.  Simply put, the only way to guarantee you have the most possible seats used is to try every possible order of seat checking, and pick the one which has the most seats used. Actually trying out every seat ordering would take a very long time; there are more ways to order $253$ seats than there are particles in the universe.\\
 
-What we can do, though, is develop techniques to check our solutions and continuously improve upon them where possible. At a cost of additional time and computing power to implement, these methods would improve the likelihood we have found the best possible seating arrangement, allowing us to potentially further improve on our already powerful result. For example, we have a provided preliminary calculations in \autoref{fig:Stochastic_sims} to show that our current results are optimal up to 5,000 simulations, however, this can extended with computational power and theoretical applications.\\
+What we can do, though, is develop techniques to check our solutions and continuously improve upon them where possible. At a cost of additional time and computing power to implement, these methods would improve the likelihood we have found the best possible seating arrangement, allowing us to potentially further improve on our already powerful result. For example, we have a provided preliminary calculations in \autoref{fig:Stochastic_sims} to show that our current results are optimal up to $5,000$ simulations, however, this can extended with computational power and theoretical applications.\\
 
 \end{document}
